@@ -50,5 +50,3 @@ ip6tables -A Cmn_OUT -p udp --dport 547 -d ff02::1:2 -j ACCEPT
 ip6tables -A Cmn_OUT -j Cmn_OUT_LOG
 # ip6tables -A Cmn_OUT -j NFLOG --nflog-group 0 --nflog-prefix 'CHK_Cmn_OUT: '
 # ip6tables -A Cmn_OUT -j ACCEPT
-
-
