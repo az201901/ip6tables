@@ -8,13 +8,13 @@ ip6tables -X
 ip6tables -Z
 
 # ポリシーの設定
-# ip6tables -P INPUT DROP
-# ip6tables -P OUTPUT DROP
-# ip6tables -P FORWARD DROP
+ip6tables -P INPUT DROP
+ip6tables -P OUTPUT DROP
+ip6tables -P FORWARD DROP
 
-ip6tables -P INPUT ACCEPT
-ip6tables -P OUTPUT ACCEPT
-ip6tables -P FORWARD ACCEPT
+# ip6tables -P INPUT ACCEPT
+# ip6tables -P OUTPUT ACCEPT
+# ip6tables -P FORWARD ACCEPT
 
 
 # ===========================
@@ -45,6 +45,25 @@ ip6tables -A INPUT -m physdev --physdev-in enp1s0 -j W_INPUT
 ip6tables -A OUTPUT -j Cmn_OUT
 ip6tables -A FORWARD -m physdev --physdev-in enp1s0 -j W_FW
 
+
+# -----
+bash 'ip6_wifi_Lc_INPUT.sh'
+bash 'ip6_wifi_Lc_FW.sh'
+
+ip6tables -A INPUT -m physdev --physdev-in enp3s0 -j Lc_INPUT
+ip6tables -A FORWARD -m physdev --physdev-in enp3s0 -j Lc_FW
+
+
+# -----
+# この部分のチェーンは来ないはず
+ip6tables -A INPUT -j NFLOG --nflog-group 0 --nflog-prefix 'Drp_INPUT_???: '
+ip6tables -A INPUT -j DROP
+
+ip6tables -A OUTPUT -j NFLOG --nflog-group 0 --nflog-prefix 'Drp_OUTPUT_???: '
+ip6tables -A OUTPUT -j DROP
+
+ip6tables -A FORWARD -j NFLOG --nflog-group 0 --nflog-prefix 'Drp_FORWARD_???: '
+ip6tables -A FORWARD -j DROP
 
 
 echo '<< ip6 tables >> の設定が正しく処理されました'
