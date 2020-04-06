@@ -15,10 +15,14 @@ ip6tables -A W_FW_LOG -j DROP
 ip6tables -N W_FW_icmpv6
 ip6tables -A W_FW_icmpv6 ! -s $zone_local -j W_FW_LOG
 
+# NA が global address で HOP LIMIT=255 として FW されることがある
+ip6tables -A W_FW_icmpv6 -m hl --hl-eq 255 -j ACCEPT
+
 ip6tables -A W_FW_icmpv6 -p icmpv6 --icmpv6-type echo-request -j ACCEPT
 ip6tables -A W_FW_icmpv6 -p icmpv6 --icmpv6-type echo-reply -j ACCEPT
 ip6tables -A W_FW_icmpv6 -p icmpv6 --icmpv6-type router-advertisement -j ACCEPT
-ip6tables -A W_FW_icmpv6 -p icmpv6 --icmpv6-type router-solicitation -j ACCEPT
+# ff02::2 に向けての RS を FW する意義はない
+ip6tables -A W_FW_icmpv6 -p icmpv6 --icmpv6-type router-solicitation -j DROP
 ip6tables -A W_FW_icmpv6 -p icmpv6 --icmpv6-type neighbour-advertisement -j ACCEPT
 ip6tables -A W_FW_icmpv6 -p icmpv6 --icmpv6-type neighbour-solicitation -j ACCEPT
 ip6tables -A W_FW_icmpv6 -p icmpv6 --icmpv6-type redirect -j ACCEPT
