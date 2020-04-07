@@ -12,6 +12,8 @@ port_http='80'
 port_https='443'
 port_ntp='123'
 
+port_whois='43'
+
 port_LLMNR='5355'
 
 # ---------------------------
