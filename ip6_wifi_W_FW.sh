@@ -13,10 +13,8 @@ ip6tables -A W_FW_LOG -j DROP
 # ---------------------------
 # icmpv6 チェーン
 ip6tables -N W_FW_icmpv6
-ip6tables -A W_FW_icmpv6 ! -s $zone_local -j W_FW_LOG
 
-# NA が global address で HOP LIMIT=255 として FW されることがある
-ip6tables -A W_FW_icmpv6 -m hl --hl-eq 255 -j ACCEPT
+ip6tables -A W_FW_icmpv6 ! -s $zone_local -j W_FW_LOG
 
 ip6tables -A W_FW_icmpv6 -p icmpv6 --icmpv6-type echo-request -j ACCEPT
 ip6tables -A W_FW_icmpv6 -p icmpv6 --icmpv6-type echo-reply -j ACCEPT
@@ -36,19 +34,16 @@ ip6tables -A W_FW_icmpv6 -j DROP
 ip6tables -N W_FW
 ip6tables -A W_FW -p icmpv6 -j W_FW_icmpv6
 
-# WAN 側から、TCP, UDP の新規 FORWARD を通すことはないはず
+# DHCPv6（udp による host アドレス以外の情報取得）
+# 547 に向けて発信すると、546 に返ってくる
+ip6tables -A W_FW -p udp --dport 546 -s $zone_local -j ACCEPT
 
-# DNS
-# ip6tables -A W_FW -p udp --dport $port_dns -j ACCEPT
 
-# http
-# ip6tables -A W_FW -p tcp -m multiport --dport $port_http,$port_https -j ACCEPT
+# ---------------------------
+# 未接続、RST で来るのは、ONU でのチェックをすり抜けた ACK=0 のもの
+#（CDN や LB からの可能性もあるが、広告関連のものが多い、、）
+ip6tables -A W_FW -p tcp --tcp-flags RST RST -j DROP
 
-#QUIC
-# ip6tables -A W_FW -p udp --dport $port_https -j ACCEPT
-
-# NTP
-# ip6tables -A W_FW -p udp --dport $port_ntp -j ACCEPT
 
 ip6tables -A W_FW -j W_FW_LOG
 # ip6tables -A W_FW -j ACCEPT
