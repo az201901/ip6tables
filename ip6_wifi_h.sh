@@ -18,6 +18,10 @@ port_LLMNR='5355'
 icmpv6_V2_MLR='143'
 
 # ---------------------------
+ND_All_node='ff02::1'
+ND_All_router='ff02::2'
+MLDv2_capable_routers='ff02::16'
+
 DHCP_Relay='ff02::1:2'
 DHCPv6_servers='ff02::1:3'
 
