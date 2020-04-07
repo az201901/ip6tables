@@ -35,6 +35,13 @@ ip6tables -A INPUT -p udp -m state --state ESTABLISHED,RELATED -j ACCEPT
 ip6tables -A FORWARD -p udp -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 
+# ---------------------------
+# ND は許可
+ip6tables -A INPUT -m hl --hl-eq 255 -j ACCEPT
+ip6tables -A OUTPUT -m hl --hl-eq 255 -j ACCEPT
+ip6tables -A FORWARD -m hl --hl-eq 255 -j ACCEPT
+
+
 # ===========================
 bash 'ip6_wifi_W_INPUT.sh'
 bash 'ip6_wifi_Cmn_OUT.sh'
